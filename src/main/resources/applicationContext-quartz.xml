@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- SchedulerFactoryBean这个类中把spring上下 文以key/value的方式存放在了SchedulerContext中了，
+            可以用applicationContextSchedulerContextKey所 定义的key得到对应spring 的ApplicationContext -->
+        <property name="applicationContextSchedulerContextKey" value="applicationContextKey"/>
+        <property name="configLocation" value="classpath:quartz.properties"/>
+        <property name="triggers" ref="trigger1"/>
+    </bean>
+
+    <bean id="trigger1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail1"/>
+        <property name="cronExpression" value="0/10 * * * * ?"/>
+    </bean>
+
+    <bean id="jobDetail1" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.scl.cluster.example.MyQuartzJobBean1"/>
+        <property name="durability" value="true"/>
+        <!-- requestsRecovery属性必须设置为 true，当Quartz服务被中止后，再次启动或集群中其他机器接手任务时会尝试恢复执行之前未完成的所有任务。 -->
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+
+
+</beans>
